@@ -4,17 +4,17 @@ import SearchForm from "@/components/SearchForm";
 import styles from "@/styles/Home.module.css";
 import axios from "@/lib/axios";
 
-export default function Home() {
-  const [movies, setMovies] = useState([]);
-  const getMovies = async () => {
-    const res = await axios.get("/movies");
-    const movieData = res.data;
-    setMovies(movieData.results);
-  };
+export async function getStaticProps() {
+  const res = await axios.get("/movies");
+  const movieData = res.data;
+  return {
+    props: {
+      movies: movieData.results,
+    }
+  }
+}
 
-  useEffect(() => {
-    getMovies();
-  }, []);
+export default function Home({ movies }) {
 
   return (
     <>
