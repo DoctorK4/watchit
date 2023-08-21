@@ -16,53 +16,37 @@ const labels = {
   },
 };
 
-export async function getStaticPaths() {
-  const res = await axios.get("/movies");
-  const movieData = res.data.results;
-  const paths = movieData.map((movie) => ({
-    params: { id: String(movie.id) },
-  }));
-
-  return {
-    paths,
-    fallback: true,
-  }
-}
-
-export async function getStaticProps( context ) {
-  const targetId = context.params['id'];
+export async function getServerSideProps( context ) {
+  const { id } = context.params;
+  
   let movieData;
   try {
-    const res = await axios.get(`/movies/${targetId}}`);
+    const res = await axios.get(`/movies/${id}`);
     movieData = res.data;
   } catch {
     return {
       notFound: true,
     }
   }
+  
+  let reviewData;
+  try {
+    const response = await axios.get(`/movie_reviews/?movie_id=${id}`);
+    reviewData = response.data.results ?? [];
+  } catch {
+    reviewData = [];
+  }
+
   return {
     props: {
       movie: movieData,
+      movieReviews: reviewData,
     },
   };
 }
 
-export default function Movie({movie}) {
-  const router = useRouter();
-  const id = router.query.id;
-  const [movieReviews, setMovieReviews] = useState([]);
+export default function Movie({movie, movieReviews}) {
 
-  const getMovieReviews = async (id) => {
-    const response = await axios.get(`/movie_reviews/?movie_id=${id}`);
-    const reviewData = response.data.results;
-    if (reviewData == undefined) setMovieReviews([]);
-    setMovieReviews(reviewData);
-  };
-
-  useEffect(() => {
-    if (id) getMovieReviews(id);
-  }, [id]);
-  
   if (!movie) return (
     <div className={styles.loading}>
       <Spinner />

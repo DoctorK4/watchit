@@ -5,7 +5,7 @@ import axios from "@/lib/axios";
 import Head from "next/head";
 
 export async function getServerSideProps(context) {
-  const q = context.query['q'];
+  const { q } = context.query;
   const response = await axios.get(`/movies?q=${q}`);
   const queryMovies = response.data.results ?? [];
   return {
