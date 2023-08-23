@@ -1,3 +1,4 @@
+
 .header {
   border-bottom: 1px solid #1f1f1f;
 }
@@ -11,4 +12,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 26px 0;
+}
+
+.a11yHidden {
+  text-indent: -9999px;
+  overflow: hidden;
 }
